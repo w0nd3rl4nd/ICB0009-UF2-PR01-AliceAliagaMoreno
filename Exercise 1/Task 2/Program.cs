@@ -101,7 +101,7 @@ class Hospital
             Thread.Sleep(patient.ConsultancyTime * 1000);
 
             // Discharge patient, remove patient then release the doctor and room
-            Console.WriteLine($"[Discharge] Patient {patient.Id} has finished with Doctor {doctorId + 1}");
+            Console.WriteLine($"[Discharge] Patient {patient.Id} and Arrival {patient.ArrivalNumber} has finished with Doctor {doctorId + 1}");
             patientList.RemoveAll(p => p.Id == patient.Id);
             consultAvailability.Release();
         }
