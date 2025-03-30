@@ -7,6 +7,7 @@ If text is displayed poorly, modify "Thread.Sleep(1)" at the end of MonitorPatie
 All previous excercises requisites, plus:
 * Create a random patient generator
 * Every two seconds it will generate a patient with different consultancy times, priority and wether it requires diagnostic or not
+* Launch the simulation with any number of selected patients
 
 ## Classes and methods
 No changes were made as since the very beginning my code implemented a random patient generator and changes were directly made to it to adapt for changes such as priority.
