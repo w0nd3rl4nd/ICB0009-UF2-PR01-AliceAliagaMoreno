@@ -4,7 +4,7 @@
 If text is displayed poorly, modify "Thread.Sleep(1)" at the end of MonitorPatientStatus() and change it to "*500*". One millisecond was used as in my computer it prompts non-blinking visuals.
 
 ## EXTRA!
-Divided classes in files for imporved management and readability
+Divided classes in files for improved management and readability
 
 ## Requisites
 All previous excercises requisites, plus:
