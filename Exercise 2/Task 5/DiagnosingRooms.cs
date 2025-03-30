@@ -60,6 +60,9 @@ class DiagnosingRooms
         // Simulate the diagnosis time of 15 seconds
         Thread.Sleep(15000);
 
+        // Increment total diagnosis
+        Hospital.TotalDiagnoses++;
+
         // Set the Status to "Awaiting consultancy
         patient.Status = "Awaiting consult";
         patient.FinishDiagnosisTime = DateTime.Now;

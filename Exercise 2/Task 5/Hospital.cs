@@ -5,6 +5,19 @@ using System.Threading;
 class Hospital
 {
 
+    // Statistic calculation variables
+
+    // Dictionary of wait times by priority
+    public static Dictionary<int, List<double>> WaitTimesByPriority = new Dictionary<int, List<double>>();
+    // Dictionary of patient count by priority
+    public static Dictionary<int, int> PatientCountByPriority = new Dictionary<int, int>();
+    public static int TotalDiagnoses = 0;
+    public static DateTime SimulationStartTime;
+    public static DateTime SimulationEndTime;
+
+    public static bool started = false;
+
+
     // Global list of hosted patients
     static List<Patient> patientList = new List<Patient>();
 
@@ -23,7 +36,14 @@ class Hospital
             // Register new patient 
             lock (patientListLock) {
                 patientList = RegisterNewPatient(patientList);
+
+                if (patientList.Count == 1 && !started) {
+                    SimulationStartTime = DateTime.Now; // Start simulation timer when we register the first patient
+                    started = !started; // Registers that it's started to avoid bug if the last patient were to be registered as the only one for any reason
+                }
             }
+
+            
 
             // Get last registry
             Patient currentPatient = patientList[patientList.Count - 1];
@@ -31,7 +51,7 @@ class Hospital
             // Launch a new thread and manage this patient
             new Thread(() => ManagePatient(currentPatient, patientList)).Start();
 
-            Thread.Sleep(2000); // A new patient should only arrive every two seconds
+            Thread.Sleep(500); // A new patient should only arrive every two seconds
         }
     }
 
@@ -109,6 +129,18 @@ class Hospital
             }
 
                 foreach (Patient patient in toRemove) {
+                    // Register elapsed times before deleting patient
+                    if (patient.RequiresDiagnosis) {
+                        double diagnosisWait = (patient.StartDiagnosisTime - patient.ArrivalTime).TotalSeconds;
+                        double consultWait = (patient.StartConsultancyTime - patient.FinishDiagnosisTime).TotalSeconds;
+                        double totalWait = diagnosisWait + consultWait;
+                        AddWaitTime(patient.Priority, totalWait);
+                    }
+                    else {
+                        double consultWait = (patient.StartConsultancyTime - patient.ArrivalTime).TotalSeconds;
+                        AddWaitTime(patient.Priority, consultWait);
+                    }
+
                     lock (patientListLock) {
                         patientList.Remove(patient);
                     }
@@ -123,6 +155,7 @@ class Hospital
                 }
                 // Check if more than 5 seconds have passed
                 else if ((DateTime.Now - emptyStartTime.Value).TotalSeconds >= 5) {
+                    Console.Clear();
                     Console.WriteLine("No patients remaining for 5 seconds. Monitoring stopped.");
                     exit = !exit;
                 }
@@ -137,6 +170,24 @@ class Hospital
             Thread.Sleep(1);
 
         }
+
+        SimulationEndTime = DateTime.Now;
+
+        Console.WriteLine("\n=== Simulation statistics ===");
+        Console.WriteLine("Attended patients:");
+        Console.WriteLine($"- Emergencies: {PatientCountByPriority.GetValueOrDefault(1, 0)}");
+        Console.WriteLine($"- Urgencies: {PatientCountByPriority.GetValueOrDefault(2, 0)}");
+        Console.WriteLine($"- General consultancies: {PatientCountByPriority.GetValueOrDefault(3, 0)}");
+
+        Console.WriteLine("Average waiting time:");
+        PrintMeanWaitTime(1);
+        PrintMeanWaitTime(2);
+        PrintMeanWaitTime(3);
+
+        double totalDiagnosisTime = TotalDiagnoses * 15;
+        double simulationDuration = (SimulationEndTime - SimulationStartTime).TotalSeconds;
+        double diagnosticUsage = (totalDiagnosisTime / (2 * simulationDuration)) * 100;
+        Console.WriteLine($"Average usage of the diagnostic machinery: {diagnosticUsage:F1}%"); // Use a number with one decimal place with F1 "floating 1 decimal"
     }
 
     // Create a new patient and append it to the global list
@@ -189,4 +240,42 @@ class Hospital
         // Return the list
         return patientList;
     }
+
+    // Helper method to print the median wait for a priority
+    private static void PrintMeanWaitTime(int priority) {
+        var times = WaitTimesByPriority.GetValueOrDefault(priority, new List<double>());
+
+        // If times are 0 print 0s
+        if (times.Count == 0) {
+            Console.WriteLine($"- {GetPriorityName(priority)}: 0s");
+            return;
+        }
+
+        // Calculate mean
+        double average = times.Average();
+
+        Console.WriteLine($"- {GetPriorityName(priority)}: {average:F1}s");
+    }
+
+    // Helper method to get the priority name
+    private static string GetPriorityName(int priority) {
+        switch (priority)
+        {
+            case 1: return "Emergencies";
+            case 2: return "Urgencies";
+            case 3: return "General consultancies";
+            default: return "Unknown";
+        }
+    }
+
+    // Add the wait time to the WaitTimesByPriority and also increment PatientCountByPriority
+    private static void AddWaitTime(int priority, double waitTime) {
+        if (!WaitTimesByPriority.ContainsKey(priority))
+        {
+            WaitTimesByPriority[priority] = new List<double>();
+        }
+        WaitTimesByPriority[priority].Add(waitTime);
+        PatientCountByPriority[priority] = PatientCountByPriority.GetValueOrDefault(priority, 0) + 1;
+    }
+
 }
