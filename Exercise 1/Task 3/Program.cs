@@ -150,8 +150,9 @@ class Hospital
                 emptyStartTime = null;
             }
 
-            // Monitor every half a second for proper update latency
-            Thread.Sleep(500);
+            // Monitor every half a second for proper update latency (with visual glitching)
+            // Monitor every 1 millisecond for close-to perfect visuals
+            Thread.Sleep(1);
 
         }
     }
