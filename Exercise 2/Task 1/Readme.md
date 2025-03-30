@@ -4,7 +4,7 @@
 If text is displayed poorly, modify "Thread.Sleep(1)" at the end of MonitorPatientStatus() and change it to "*500*". One millisecond was used as in my computer it prompts non-blinking visuals.
 
 ## Requisites
-All previous excercise requisites, plus:
+All previous excercises requisites, plus:
 * Patients must have a 50% chance of requiring diagnosis
 * If diagnosis is required, it will occur in 15 seconds each
 * Only two diagnosis rooms are available
