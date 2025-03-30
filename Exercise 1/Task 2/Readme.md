@@ -1,4 +1,4 @@
-# Exercise 1 - Task 1: Medical Consultancy
+# Exercise 1 - Task 2: Patients hold data
 This program simulates a more realistic patient management and attendance system. Patients are created with random but unique IDs and are assigned a random time of consultation.
 
 This provides a more erratic entry of patients and thus the system has been modified accordingly

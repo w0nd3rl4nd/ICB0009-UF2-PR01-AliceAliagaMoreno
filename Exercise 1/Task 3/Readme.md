@@ -1,4 +1,4 @@
-# Exercise 1 - Task 1: Medical Consultancy
+# Exercise 1 - Task 3: Monitor changes
 
 ## LATENCY ALERT!
 If text is displayed poorly, modify "Thread.Sleep(1)" at the end of MonitorPatientStatus() and change it to "*500*". One millisecond was used as in my computer it prompts non-blinking visuals.
