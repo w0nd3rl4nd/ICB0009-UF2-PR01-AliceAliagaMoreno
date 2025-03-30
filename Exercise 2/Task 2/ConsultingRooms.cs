@@ -9,14 +9,41 @@ class ConsultingRooms
     static int availableDoctors = 4;
     static int maximumSimultaneousConsults = Math.Min(availableConsultRooms, availableDoctors);
 
+    // Add a consult queue with a lock object
+    private static readonly SortedList<int, Patient> consultQueue = new SortedList<int, Patient>();
+    private static object queueLock = new object();
+
     // A semaphore to simulate the consulting room availability
     static SemaphoreSlim consultAvailability = new SemaphoreSlim(maximumSimultaneousConsults);
 
     // Method for attending patients
     public static void AttendPatient(Patient patient, List<Patient> patientList)
     {
-        // Occupy a consult. Moved up from status change to remove bug where patients wouldn't await
-        consultAvailability.Wait();
+        // Add patient to queue
+        lock (queueLock) {
+            consultQueue.Add(patient.ArrivalNumber, patient);
+        }
+
+        // Set dispatched boolean to false until patient is dispatched
+        bool dispatched = false; 
+
+        // While the patient is dispatched check if the first value in the queue matches the patient number
+        while (!dispatched) {
+            if (consultQueue.Values.First().ArrivalNumber == patient.ArrivalNumber && consultAvailability.CurrentCount > 0) {
+                // If so, lock the queue, give them the consult and remove them from the queue. Dispatched will be set to true.
+                lock (queueLock) {
+                    consultAvailability.Wait();
+                    consultQueue.Remove(patient.ArrivalNumber);
+                    dispatched = true;
+                }
+            }
+
+            // Sleep a bit at each check to avoid overload
+            if (!dispatched) {
+                Thread.Sleep(10);
+            }
+        }
+
 
         // Set patient status
         patient.StartConsultancyTime = DateTime.Now;

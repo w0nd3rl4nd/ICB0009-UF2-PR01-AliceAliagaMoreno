@@ -11,6 +11,9 @@ class Hospital
     //Lock for locking the patient list and avoiding collisions on writing and deleting operations
     static object patientListLock = new object();
 
+    // Global counter for arrivals
+    static int nextArrivalNumber = 1;
+
     public static void SimulatePatientArrival(int patientQuantity)
     {
 
@@ -64,7 +67,7 @@ class Hospital
             toRemove.Clear();
 
             // For each patient, do
-            foreach (Patient patient in patientList) {
+            foreach (Patient patient in patientList.ToList()) { // Fix a but where deleting patient from list would cause an exception by temporarily duplicating list
 
                 string times = "";
                 switch(patient.Status) {
@@ -153,8 +156,14 @@ class Hospital
             idExists = patientList.Exists(p => p.Id == newId);
         } while (idExists);
 
-        // Initialise rest of properties
-        int ArrivalNumber = patientQuantity + 1;
+        // Arrival Number assigned with lock to protect from concurrent arrivals
+        int ArrivalNumber;
+        lock (patientListLock) {
+            ArrivalNumber = nextArrivalNumber;
+            nextArrivalNumber++;
+        }
+
+        // Initialise consultancy time
         int ConsultancyTime = random.Next(10, 21);
 
         // Randomly generate a 50% chance of needing diagnosis
