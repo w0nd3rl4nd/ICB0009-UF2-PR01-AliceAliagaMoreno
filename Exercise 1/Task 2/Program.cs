@@ -76,16 +76,14 @@ class Hospital
         // Simulate that we have a number of rooms and doctors. The number of simultaneous attendance can only be as high as the smallest number
         static int availableConsultRooms = 4;
         static int availableDoctors = 4;
-        static int maximumPossibleSimultaneousConsults = Math.Min(availableConsultRooms, availableDoctors);
+        static int maximumSimultaneousConsults = Math.Min(availableConsultRooms, availableDoctors);
         
         // A semaphore to simulate the consulting room availability
-        static SemaphoreSlim consultAvailability = new SemaphoreSlim(maximumPossibleSimultaneousConsults);
+        static SemaphoreSlim consultAvailability = new SemaphoreSlim(maximumSimultaneousConsults);
 
         // Method for attending patients
         public static void AttendPatient(Patient patient, List<Patient> patientList)
         {
-            // Output that a patient has arrived
-            Console.WriteLine($"[Arrival] Patient {patient.Id} has arrived.");
 
             // We set the current doctor ID as the current available slots (from 4 to 1) then we subtract -4 to return the order backwards (start from ConsultRoom 1 up to 4)
             int doctorId = (4 - consultAvailability.CurrentCount);
@@ -99,6 +97,9 @@ class Hospital
 
             // Simulate consultation time based on the consultancy time of the patient
             Thread.Sleep(patient.ConsultancyTime * 1000);
+
+            // Set the Status to Discharged
+            patient.Status = "Discharged";
 
             // Discharge patient, remove patient then release the doctor and room
             Console.WriteLine($"[Discharge] Patient {patient.Id} and Arrival {patient.ArrivalNumber} has finished with Doctor {doctorId + 1}");
