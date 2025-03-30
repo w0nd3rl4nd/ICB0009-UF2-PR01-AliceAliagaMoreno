@@ -26,15 +26,10 @@ All previous excercises requisites, plus:
 * Added FinishDiagnosisTime to track when diagnosis finished
 
 ## Q&A
-### 1. Did you choose to visualize extra information? Why? Elaborate on what other information could be useful.
-I actually decided to show the information in the following fashion:
-   
-* While `Awaiting`, add how many seconds the patient has waited
-* While `In consultancy`, add the expected consultancy time and the time elapsed
-* While `Discharged`, add how much time it took and add a counter to say in how much time the patient will be removed from the list
+### 1. Do patients that require consultancy enter to the consultancy by arrival order? Explain what type of tests you realised to check this behaviour.
+Patients that arrived before new ones will NOT have preference for consultancy if they have just finished a diagnosis. In fact they will wait until no new patients can enter a diagnosis room to be assigned one. That means that virtually a patient could wait until every other patient has been given a consult if this patient had a diagnosis beforehand.
 
-This extra information is extremely useful to snapshot a more accurate picture of the current status as it provides rich information on everything that's going on at the moment.
+I checked this via making the consultancy periods longer and simulating 20 patients, this way I could observe how "Awaiting consult" patients that didn't diagnose entered before "Awaiting consult" patiens that were diagnosed.
 
 ## Output
-![alt text](workingOutput.png)
-![alt text](endingOutput.png)
+![alt text](image-1.png)
