@@ -32,4 +32,4 @@ Patients that arrived before new ones will NOT have preference for consultancy i
 I checked this via making the consultancy periods longer and simulating 20 patients, this way I could observe how "Awaiting consult" patients that didn't diagnose entered before "Awaiting consult" patiens that were diagnosed.
 
 ## Output
-![alt text](image-1.png)
+![alt text](Output.png)
