@@ -13,11 +13,11 @@ SlimSemaphor and Threads were used to simulate the simultaneous ordered attendan
 
 ## Classes and methods
 
-### Hospital Class
+### Class Hospital
 * Represents the entire hospital, thus has the `main` method
 * Implements `SimulatePatientArrival` with a variable quantity of patients
 
-### ConsultingRooms SubClass
+### SubClass ConsultingRooms
 * Represents the Consulting Rooms section of the hospital
 * Sets a quantity of available rooms and doctors, and makes the maximum possible simultaneous consults the smallest of this two values
 * Includes the `AttendPatient` method which will perform the actions required for the attendance
