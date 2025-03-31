@@ -39,10 +39,10 @@ class ConsultingRooms
 
         // While the patient is dispatched check if the first value in the queue matches the patient number
         while (!dispatched) {
-            // Now the consult Queue will check the first (smallest) arrival number which will already have been sorted by priority
-            if (consultQueue.First().ArrivalNumber == patient.ArrivalNumber && consultAvailability.CurrentCount > 0) {
-                // If so, lock the queue, give them the consult and remove them from the queue. Dispatched will be set to true.
-                lock (queueLock) {
+            lock(queueLock) {
+                // Now the consult Queue will check the first (smallest) arrival number which will already have been sorted by priority
+                if (consultQueue.First().ArrivalNumber == patient.ArrivalNumber && consultAvailability.CurrentCount > 0) {
+                    // If so, give them the consult and remove them from the queue. Dispatched will be set to true.
                     consultAvailability.Wait();
                     consultQueue.Remove(patient);
                     dispatched = true;
